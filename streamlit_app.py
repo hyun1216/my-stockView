@@ -138,7 +138,7 @@ if not df_history.empty:
             total_profit_won = 0
 
         # 2.모바일 최적화 요약 대시보드
-        st.subheader("🚀 포트폴리오 요약")
+        st.subheader("요약")
         col1, col2 = st.columns(2)
         
         with col1:
