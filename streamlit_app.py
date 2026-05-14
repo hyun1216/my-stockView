@@ -46,7 +46,7 @@ st.sidebar.header("매매 기록 입력")
 with st.sidebar.form("trade_form", clear_on_submit=True):
     date = st.date_input("매매 날짜", datetime.now())
     
-    # [수정] 텍스트 입력 대신 검색 가능한 선택창으로 변경
+    # 텍스트 입력 대신 검색 가능한 선택창으로 변경
     selected_stock = st.selectbox(
         "종목 선택 (이름으로 검색)",
         krx_list['display_name'].tolist(),
@@ -137,7 +137,7 @@ if not df_history.empty:
             total_profit_rate = 0
             total_profit_won = 0
 
-        # 2. [추가] 모바일 최적화 요약 대시보드
+        # 2.모바일 최적화 요약 대시보드
         st.subheader("🚀 포트폴리오 요약")
         col1, col2 = st.columns(2)
         
@@ -157,3 +157,8 @@ if not df_history.empty:
 
         csv = res_df.to_csv(index=False).encode('utf-8-sig')
         st.download_button("🔽 포트폴리오 엑셀(CSV) 다운로드", csv, 'my_portfolio.csv', 'text/csv')
+    else:
+        # [추가] 데이터가 하나도 없을 때 보여줄 안내 문구
+        st.info("💡 아직 등록된 매매 기록이 없네! 왼쪽 사이드바에서 종목을 입력하고 '기록 저장'을 눌러줘.")
+with st.expander("📜 전체 매매 이력 확인"):
+    st.table(df_history)
