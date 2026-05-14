@@ -124,12 +124,36 @@ if not df_history.empty:
 
     if portfolio:
         res_df = pd.DataFrame(portfolio)
-        st.dataframe(res_df, use_container_width=True)
-        
-        csv = res_df.to_csv(index=False).encode('utf-8-sig')
-        st.download_button("🔽 포트폴리오 엑셀(CVS) 다운로드", csv, 'my_portfolio.csv', 'text/csv')
-else:
-    st.info("왼쪽 사이드바를 열어 첫 매매 기록을 입력해 주세요!")
 
-with st.expander("📜 전체 매매 이력 확인"):
-    st.table(df_history)
+        # 1. 합계 데이터 계산 (변수 선언)
+        total_eval_amount = res_df['평가금액'].sum()  # 전체 평가 금액 합계
+        total_purchase_amount = (res_df['보유수량'] * res_df['평단가']).sum() # 전체 매수 금액 합계
+        
+        # 수익률 계산 (분모가 0인 경우 방지)
+        if total_purchase_amount > 0:
+            total_profit_rate = round((total_eval_amount - total_purchase_amount) / total_purchase_amount * 100, 2)
+            total_profit_won = int(total_eval_amount - total_purchase_amount)
+        else:
+            total_profit_rate = 0
+            total_profit_won = 0
+
+        # 2. [추가] 모바일 최적화 요약 대시보드
+        st.subheader("🚀 포트폴리오 요약")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # 총 자산을 큰 글씨로 표시
+            st.metric("총 자산", f"{int(total_eval_amount):,}원")
+            
+        with col2:
+            # 전체 수익률을 표시 (수익 금액을 delta로 넣어서 화살표 표시)
+            st.metric("전체 수익률", f"{total_profit_rate}%", f"{total_profit_won:,}원")
+        
+        st.divider() # 구분선 하나 그어주면 더 깔끔해!
+
+        # 3. 상세 내역 표 및 다운로드 버튼
+        st.subheader("📝 상세 내역")
+        st.dataframe(res_df, use_container_width=True)
+
+        csv = res_df.to_csv(index=False).encode('utf-8-sig')
+        st.download_button("🔽 포트폴리오 엑셀(CSV) 다운로드", csv, 'my_portfolio.csv', 'text/csv')
